@@ -1,4 +1,4 @@
-Professional Equity Analysis Terminal
+**Professional Equity Analysis Terminal**
 
 EQUITEX is a highly advanced, zero-dependency equity analysis terminal featuring a Bloomberg Dark Terminal theme. 
 It combines real-time technical analysis, quantitative statistical forecasting, and AI-powered insights into a single, cohesive interface.  
@@ -14,14 +14,15 @@ It combines real-time technical analysis, quantitative statistical forecasting, 
 
 🏗️ Architecture & ModulesThe terminal is built entirely with Vanilla HTML, CSS, and JavaScript, strictly categorized into specific modules: 
  ModuleNameDescriptionCP-1ARIMAMath engine for statistical time-series prediction.  
- CP-2DATASeed definitions, deterministic PRNG data generation, and technical indicator calculations.  
- CP-3CHARTCanvas rendering engine for main candlestick charts, overlays, and sub-charts.  
- CP-4CLAUDE_AIAnthropic API integration for contextual AI analysis.  
- CP-5NEWSSimulated macro and ticker-specific news feed generation.  
- CP-6APPCore controller managing UI wiring, state, export logic, and the global earth terminal.  
+   CP-2DATASeed definitions, deterministic PRNG data generation, and technical indicator calculations.  
+   CP-3CHARTCanvas rendering engine for main candlestick charts, overlays, and sub-charts.  
+   CP-4CLAUDE_AIAnthropic API integration for contextual AI analysis.  
+   CP-5NEWSSimulated macro and ticker-specific news feed generation.  
+   CP-6APPCore controller managing UI wiring, state, export logic, and the global earth terminal.  
  Layout: CSS Grid-based application shell dividing the top bar, sidebar, main chart, and right tab panel.  
 
 🎨 Design SystemThe UI is powered by a robust CSS custom property token system mapping backgrounds, semantic colors (bull/bear/warn), and typography.
-🚀 Getting StartedBecause EQUITEX operates with zero external JS dependencies, running the project is incredibly simple:Ensure equitex.html, equitex.css, and equitex.js are in the same directory.  Open equitex.html in any modern web browser.  
+🚀 Getting Started because EQUITEX operates with zero external JS dependencies, running the project is incredibly simple:Ensure equitex.html, equitex.css, and equitex.js are in the same directory. Open equitex.html in any modern web browser.  
 
-⚠️ DisclaimerSimulated market data only. Not financial advice. This project is strictly an educational demonstration.  Author: Vedant Nayyar 
+**⚠️ DisclaimerSimulated market data only. Not financial advice. This project is strictly an educational demonstration.  **
+Author: Vedant Nayyar 
