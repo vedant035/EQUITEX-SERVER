@@ -1,0 +1,355 @@
+﻿<!--
+ ═══════════════════════════════════════════════════════════
+  EQUITEX TERMINAL  ·  equitex.html
+  Professional Equity Analysis Terminal — HTML Structure
+ ───────────────────────────────────────────────────────────
+  Author  : Vedant Nayyar  (25/SET/BCSE/382)
+  Version : 3.0
+
+  FILE DEPENDENCIES (must be in same directory):
+    equitex.css  — complete UI/UX design system
+    equitex.js   — all logic modules (CP-1 through CP-6)
+
+  PAGE STRUCTURE:
+    #landing      Landing / marketing page (shown first)
+    #loading      Progress screen (shown on launch)
+    #app          Main terminal layout (CSS Grid):
+      #topbar       Search, market bar, export, alerts
+      #sidebar      Watchlist with add/remove
+      #main         Chart area + sub-charts
+      #panel        Stats | AI | News tab panel
+    #alert-modal  Price alert configuration modal
+    #toast-area   Notification toasts (injected by JS)
+ ═══════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EQUITEX · Professional Equity Terminal</title>
+  <!-- ── Google Fonts ────────────────────────────────── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- ── Stylesheet ─────────────────────────────────── -->
+  <link rel="stylesheet" href="equitex.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     LANDING PAGE
+═══════════════════════════════════════════ -->
+<div id="landing">
+  <div class="land-bg-grid"></div>
+  <div class="land-glow"></div>
+
+  <div class="land-content">
+    <div class="land-logo-wrap">
+      <div class="land-logo">EQUITEX</div>
+      <div class="land-logo-badge">PROFESSIONAL EQUITY TERMINAL · v3.0</div>
+    </div>
+
+    <div class="land-tagline">
+      Advanced equity analysis with AI-powered insights, real-time technicals, and quantitative forecasting.
+    </div>
+
+    <div class="land-features">
+      <div class="land-feat">
+        <div class="land-feat-icon">⬡</div>
+        <div class="land-feat-name">Claude AI Analysis</div>
+        <div class="land-feat-desc">Bull/Bear/Thesis synthesis powered by Anthropic Claude</div>
+      </div>
+      <div class="land-feat">
+        <div class="land-feat-icon">⌬</div>
+        <div class="land-feat-name">ARIMA Forecasting</div>
+        <div class="land-feat-desc">Statistical time-series prediction up to 45 days forward</div>
+      </div>
+      <div class="land-feat">
+        <div class="land-feat-icon">◈</div>
+        <div class="land-feat-name">50+ Assets</div>
+        <div class="land-feat-desc">Equities, ETFs, crypto, indices — across all major sectors</div>
+      </div>
+      <div class="land-feat">
+        <div class="land-feat-icon">≋</div>
+        <div class="land-feat-name">Technical Indicators</div>
+        <div class="land-feat-desc">RSI, MACD, Stochastic, OBV, Fibonacci & Bollinger Bands</div>
+      </div>
+      <div class="land-feat">
+        <div class="land-feat-icon">☰</div>
+        <div class="land-feat-name">Watchlist + Alerts</div>
+        <div class="land-feat-desc">Custom watchlists with price alert notifications</div>
+      </div>
+      <div class="land-feat">
+        <div class="land-feat-icon">↑</div>
+        <div class="land-feat-name">Export Tools</div>
+        <div class="land-feat-desc">Download charts as PNG or generate full-text research reports</div>
+      </div>
+    </div>
+
+    <button class="land-launch" id="launch-btn">LAUNCH TERMINAL ▶</button>
+
+    <div class="land-disclaimer">
+      ⚠ Simulated market data only · Not financial advice · Educational demonstration only
+    </div>
+  </div>
+
+  <div class="land-ticker-strip">
+    <div class="land-ticker-inner" id="land-ticker"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     LOADING SCREEN
+═══════════════════════════════════════════ -->
+<div id="loading" style="display:none">
+  <div class="loading-logo">EQUITEX</div>
+  <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+  <div class="loading-txt">INITIALIZING MARKET DATA ENGINE…</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     APP SHELL
+═══════════════════════════════════════════ -->
+<div id="app" style="display:none">
+
+  <!-- TOP BAR -->
+  <header id="topbar">
+    <div class="topbar-logo" id="home-btn">EQUITEX <span>TERMINAL v3</span></div>
+
+    <div id="search-wrap">
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input id="ticker-input" type="text" placeholder="Search ticker… (Enter)" autocomplete="off" spellcheck="false">
+    </div>
+
+    <div id="market-ticker"></div>
+
+    <div class="topbar-actions">
+      <button class="tb-btn" id="export-png-btn" title="Export chart as PNG">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        PNG
+      </button>
+      <button class="tb-btn" id="export-report-btn" title="Export text report">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        REPORT
+      </button>
+      <button class="tb-btn" id="alert-btn" title="Set price alert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        ALERT
+      </button>
+    </div>
+
+    <div class="topbar-time" id="clock"></div>
+  </header>
+
+  <!-- SIDEBAR WATCHLIST -->
+  <aside id="sidebar">
+    <div class="sidebar-hdr">
+      <span>Watchlist</span>
+      <span style="color:var(--bull);font-size:9px">● LIVE</span>
+    </div>
+    <div id="watchlist"></div>
+    <div class="wl-add-row">
+      <input class="wl-add-input" id="wl-add-input" type="text" placeholder="Add ticker…" maxlength="6">
+      <button class="wl-add-btn" id="wl-add-btn">+ ADD</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CHART AREA -->
+  <main id="main">
+    <div id="quote-header"></div>
+
+    <div id="chart-controls">
+      <!-- Range -->
+      <div class="ctrl-group">
+        <button class="btn" data-range="30">1M</button>
+        <button class="btn" data-range="60">3M</button>
+        <button class="btn active" data-range="120">6M</button>
+        <button class="btn" data-range="252">1Y</button>
+        <button class="btn" data-range="365">MAX</button>
+      </div>
+
+      <div class="ctrl-sep"></div>
+
+      <!-- Overlays -->
+      <span style="font-size:10px;color:var(--text3);margin-right:3px">OVL:</span>
+      <button class="overlay-btn on"  data-overlay="ma">MA</button>
+      <button class="overlay-btn"     data-overlay="bb">BB</button>
+      <button class="overlay-btn on"  data-overlay="vol">VOL</button>
+      <button class="overlay-btn"     data-overlay="arima">ARIMA</button>
+      <button class="overlay-btn"     data-overlay="fib">FIB</button>
+
+      <div class="ctrl-spacer"></div>
+    </div>
+
+    <section id="earth-terminal" aria-label="Global market earth model">
+      <div class="earth-stage">
+        <canvas id="earth-canvas"></canvas>
+        <div class="earth-reticle"></div>
+        <div class="earth-hud earth-hud-left">
+          <span>GLOBAL EQUITY MAP</span>
+          <strong id="earth-region-label">UNITED STATES</strong>
+        </div>
+        <div class="earth-hud earth-hud-right">
+          <span>LIVE SIM</span>
+          <strong id="earth-session-label">MARKETS OPEN</strong>
+        </div>
+      </div>
+      <aside class="earth-data-panel">
+        <div class="earth-panel-top">
+          <div>
+            <div class="earth-kicker">Country Market Snapshot</div>
+            <h2 id="earth-country-name">United States</h2>
+          </div>
+          <button class="earth-action" id="earth-load-primary" type="button">LOAD TICKER</button>
+        </div>
+        <div class="earth-metrics" id="earth-metrics"></div>
+        <div class="earth-index-row">
+          <span id="earth-index-name">S&P 500 Proxy</span>
+          <strong id="earth-index-change" class="bull">+0.00%</strong>
+        </div>
+        <div class="earth-stock-list" id="earth-stock-list"></div>
+      </aside>
+    </section>
+    <div id="chart-wrap">
+      <canvas id="main-canvas"></canvas>
+      <div id="crosshair-tooltip"></div>
+
+      <div id="subchart-wrap">
+        <div id="subchart-tabs">
+          <div class="sc-tab active" data-chart="RSI">RSI</div>
+          <div class="sc-tab"        data-chart="MACD">MACD</div>
+          <div class="sc-tab"        data-chart="STOCH">STOCH</div>
+          <div class="sc-tab"        data-chart="STOCHRSI">STOCH-RSI</div>
+          <div class="sc-tab"        data-chart="OBV">OBV</div>
+        </div>
+        <canvas id="sub-canvas"></canvas>
+      </div>
+    </div>
+  </main>
+
+  <!-- RIGHT ANALYSIS PANEL -->
+  <aside id="panel">
+    <div class="panel-tabs">
+      <div class="panel-tab active" data-ptab="stats">STATS</div>
+      <div class="panel-tab"        data-ptab="ai">AI ✦</div>
+      <div class="panel-tab"        data-ptab="news">NEWS</div>
+    </div>
+
+    <!-- ── STATS TAB ─────────────────────────── -->
+    <div class="panel-tc active" id="ptab-stats">
+      <div style="overflow-y:auto;flex:1;min-height:0">
+
+        <div class="panel-section">
+          <div class="panel-hdr"><span>Price Statistics</span></div>
+          <div class="panel-body" id="stats-body"></div>
+        </div>
+
+        <div class="panel-section">
+          <div class="panel-hdr"><span>Technical Signals</span></div>
+          <div class="panel-body" id="signals-body"></div>
+        </div>
+
+        <div class="panel-section" id="arima-panel">
+          <div class="panel-hdr">
+            <span>ARIMA Forecast</span>
+            <span style="font-size:9px;color:var(--accent);letter-spacing:.05em">AI</span>
+          </div>
+          <div class="panel-body" id="arima-body"></div>
+        </div>
+
+      </div>
+      <div class="panel-footer">
+        <div class="panel-footer-txt">
+          ⚠ Simulated data · Not financial advice<br>
+          EQUITEX TERMINAL · v3.0 · 25/SET/BCSE/382
+        </div>
+      </div>
+    </div>
+
+    <!-- ── AI TAB ─────────────────────────────── -->
+    <div class="panel-tc" id="ptab-ai">
+      <div class="ai-panel-wrap">
+        <div class="ai-header">
+          <span class="ai-header-label">Claude Analysis</span>
+          <span class="ai-powered">✦ ANTHROPIC</span>
+        </div>
+        <div class="ai-btn-grid">
+          <button class="ai-btn ai-btn-bull"   data-ai="bull">▲ BULL CASE</button>
+          <button class="ai-btn ai-btn-bear"   data-ai="bear">▼ BEAR CASE</button>
+          <button class="ai-btn ai-btn-ind"    data-ai="industry">◈ INDUSTRY</button>
+          <button class="ai-btn ai-btn-thesis" data-ai="thesis">✦ THESIS</button>
+        </div>
+        <div class="ai-result-scroll" id="ai-result-area">
+          <div class="ai-placeholder">
+            <strong>Select an analysis mode</strong>
+            Claude will analyze <span id="ai-ticker-name">the selected ticker</span>
+            using live technical data to generate a structured research note.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NEWS TAB ──────────────────────────── -->
+    <div class="panel-tc" id="ptab-news">
+      <div class="news-wrap">
+        <div class="news-hdr">
+          <span class="news-hdr-lbl">Market Intelligence</span>
+          <span>
+            <span class="news-live-dot"></span>
+            <span style="font-size:9px;color:var(--text3)">LIVE FEED</span>
+          </span>
+        </div>
+        <div class="news-scroll" id="news-body">
+          <div style="padding:16px;color:var(--text3);font-size:11px;text-align:center">
+            Select a ticker to load news feed
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+</div><!-- #app -->
+
+<!-- ═══════════════════════════════════════════
+     PRICE ALERT MODAL
+═══════════════════════════════════════════ -->
+<div class="modal-overlay hidden" id="alert-modal">
+  <div class="modal-box">
+    <div class="modal-title">Set Alert <span id="alert-ticker-label">AAPL</span></div>
+    <div class="modal-lbl">Target Price ($)</div>
+    <input class="modal-input" id="alert-price-input" type="number" step="0.01" placeholder="e.g. 215.00">
+    <div class="modal-lbl">Trigger When</div>
+    <select class="modal-select" id="alert-dir-select">
+      <option value="above">Price rises above target</option>
+      <option value="below">Price falls below target</option>
+    </select>
+    <div class="modal-btns">
+      <button class="modal-btn-p" id="alert-set-btn">SET ALERT</button>
+      <button class="modal-btn-s" id="alert-cancel-btn">CANCEL</button>
+    </div>
+    <div class="alerts-list" id="alerts-list"></div>
+  </div>
+</div>
+
+<!-- Toast notifications -->
+<div id="toast-area"></div>
+
+<!-- ── JavaScript modules (load order matters) ── -->
+<script src="equitex.js"></script>
+
+</body>
+</html>
